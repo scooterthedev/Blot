@@ -1,8 +1,10 @@
 /*
-@title: Irregular Island with Waves, Trees, Ship, and Houses
+@title: An Island with Waves, Trees, Ship, and Houses
+@author: scooterthedev
+@snapshot: snapshot2.png
 */
 
-bt.setRandSeed(1688);
+bt.setRandSeed(1814);
 
 const width = 200;
 const height = 200;
@@ -16,7 +18,7 @@ const houseCount = bt.randIntInRange(1, 1);
 
 setDocDimensions(width, height);
 
-function drawIrregularIsland(x, y, size) {
+function drawIsland(x, y, size) {
   let points = [];
   let angle = 0;
   while (angle < 360) {
@@ -31,7 +33,7 @@ function drawIrregularIsland(x, y, size) {
   return points;
 }
 
-function drawWave(x, y, length, height, angle) {
+function drawWaves(x, y, length, height, angle) {
   let points = [];
   let waveCount = 3;
   let waveLength = length / waveCount;
@@ -51,8 +53,7 @@ function drawTree(x, y) {
   const trunkHeight = bt.randIntInRange(5, 10);
   const trunkWidth = bt.randIntInRange(2, 4);
   const foliageSize = bt.randInRange(4, 8);
-  
-  // Draw trunk
+
   let trunk = [
     [x, y],
     [x, y - trunkHeight],
@@ -60,8 +61,7 @@ function drawTree(x, y) {
     [x + trunkWidth, y],
     [x, y]
   ];
-  
-  // Draw foliage
+
   let foliage = [];
   let angle = 0;
   while (angle < 360) {
@@ -73,7 +73,7 @@ function drawTree(x, y) {
   }
   foliage.push([foliage[0][0], foliage[0][1]]);
   bt.translate([foliage], [x + trunkWidth / 2, y - trunkHeight - foliageSize / 2]);
-  
+
   return [trunk, foliage];
 }
 
@@ -90,7 +90,10 @@ function drawTexturedShip(x, y) {
 
   let shipTexture = [];
   for (let i = 0; i < shipWidth; i += 5) {
-    shipTexture.push([[x + i, y], [x + i + 2, y - shipHeight]]);
+    shipTexture.push([
+      [x + i, y],
+      [x + i + 2, y - shipHeight]
+    ]);
   }
 
   return [shipBody, ...shipTexture];
@@ -100,7 +103,7 @@ function drawHouse(x, y) {
   const houseWidth = 10;
   const houseHeight = 10;
   const roofHeight = 5;
-  
+
   let houseBody = [
     [x, y],
     [x + houseWidth, y],
@@ -148,7 +151,7 @@ function drawIslandWithWavesTreesHousesAndShip(x, y, islandSize, waveSize, waveC
     let waveY = y + distance * Math.sin(angle * Math.PI / 180);
     waves.push(drawRealisticWave(waveX, waveY, waveSize * 2, waveSize, angle));
   }
-  
+
   for (let i = 0; i < treeCount; i++) {
     let treeX, treeY;
     do {
@@ -157,7 +160,7 @@ function drawIslandWithWavesTreesHousesAndShip(x, y, islandSize, waveSize, waveC
     } while (!isPointInIsland(island, treeX, treeY));
     trees = trees.concat(drawTree(treeX, treeY));
   }
-  
+
   for (let i = 0; i < houseCount; i++) {
     let houseX, houseY;
     do {
@@ -168,10 +171,18 @@ function drawIslandWithWavesTreesHousesAndShip(x, y, islandSize, waveSize, waveC
   }
 
   let ship = drawTexturedShip(shipX, shipY);
-  
+
   return [island, ...waves, ...trees, ...houses, ...ship];
+}
+
+function flipSceneVertically(scene) {
+  return scene.map(line =>
+    line.map(([x, y]) => [x, height - y])
+  );
 }
 
 const islandWithWavesTreesHousesAndShip = drawIslandWithWavesTreesHousesAndShip(width / 2, height / 2, islandSize, waveSize, waveCount, treeCount, houseCount);
 
-drawLines(islandWithWavesTreesHousesAndShip);
+const flippedScene = flipSceneVertically(islandWithWavesTreesHousesAndShip);
+
+drawLines(flippedScene);
